@@ -1,5 +1,9 @@
 const express = require('express')
 const app = express()
+const path = require('path');
+const fs = require('fs');
+const Buffer = require('buffer').Buffer;
+// import fs from 'fs'
 
 app.get('/webcam', (req, res) => {
 
@@ -9,9 +13,26 @@ app.get('/webcam', (req, res) => {
     pyProg.stdout.on('data', function(data) {
 
         console.log(data.toString());
-        res.write(data);
-        res.end('end');
+        let buff = new Buffer(data, 'base64');
+        decode_base64(data,'rane.png');
+        // res.write(buff);
+        //res.end('end');
     });
 })
 
 app.listen(3000, () => console.log('Application listening on port 3000!'))
+
+function decode_base64(base64str , filename){
+
+    var buf = Buffer.from(base64str,'base64');
+  
+    fs.writeFile(path.join(__dirname,'/public/',filename), buf, function(error){
+      if(error){
+        throw error;
+      }else{
+        console.log('File created from base64 string!');
+        return true;
+      }
+    });
+  
+  }
